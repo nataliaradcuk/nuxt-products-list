@@ -4,20 +4,30 @@
       Nuxt UI - Starter
     </h1>
 
-    <div class="flex items-center gap-2">
+    <div class="flex flex-col gap-6">
       <UButton
           label="Blog Posts Table"
-          icon="i-lucide-table"
+          icon="i-lucide-file-text"
           to="/BlogPosts"
       />
-
       <UButton
           label="Blog Posts (UI Table)"
-          icon="i-lucide-layout-grid"
+          icon="i-lucide-layout-list"
           color="primary"
           variant="outline"
           to="/BlogPostsUi"
       />
+      <UButton
+          label="Categories"
+          icon="i-lucide-tags"
+          color="primary"
+          variant="outline"
+          to="/CategoriesUi"
+      />
     </div>
+
   </div>
 </template>
+
+<script setup lang="ts">
+</script>

@@ -2,6 +2,9 @@
 import { h } from 'vue'
 import type { TableColumn } from '@nuxt/ui'
 import { getPaginationRowModel } from '@tanstack/vue-table'
+import { useRouter } from 'vue-router'
+import { useToast } from '#imports'
+import type { DropdownMenuItem } from '@nuxt/ui'
 
 const table = ref()
 
@@ -37,6 +40,8 @@ const allPosts = computed<PostTableRow[]>(() =>
           : 'Не опубліковано'
     })) ?? []
 )
+const router = useRouter()
+const toast  = useToast()
 
 const columns: TableColumn<PostTableRow>[] = [
   {
@@ -67,8 +72,60 @@ const columns: TableColumn<PostTableRow>[] = [
   {
     accessorKey: 'publishedAt',
     header: 'Дата публікації'
+  },
+
+  {
+    id: 'actions',
+    header: 'Дії',
+    cell: ({ row }) =>
+        h(
+            resolveComponent('UDropdownMenu'),
+            {
+              items: getDropdownItems(row.original),
+              popper: { placement: 'bottom-end' }
+            },
+            {
+              default: () =>
+                  h(resolveComponent('UButton'), {
+                    icon: 'i-lucide-ellipsis-vertical',
+                    color: 'neutral',
+                    variant: 'ghost',
+                    'aria-label': 'Actions'
+                  })
+            }
+        )
   }
+
 ]
+function getDropdownItems(post: PostTableRow): DropdownMenuItem[][] {
+  return [
+    [
+      {
+        label: 'Редагувати',
+        icon: 'i-lucide-edit',
+        onSelect: () => router.push(`/admin/blog/posts/${post.id}/edit`)
+      }
+    ],
+    [
+      {
+        label: 'Видалити',
+        icon: 'i-lucide-trash',
+        color: 'error',
+        onSelect: async () => {
+          const confirmed = confirm(`Видалити пост «${post.title}»?`)
+          if (!confirmed) return
+
+          await $fetch(`/api/blog/posts/${post.id}`, { method: 'DELETE' })
+          postsResponse.value!.data = postsResponse.value!.data.filter(
+              p => p.id !== post.id
+          )
+
+          toast.add({ title: 'Пост видалено', color: 'success' })
+        }
+      }
+    ]
+  ]
+}
 
 
 const pagination = ref({

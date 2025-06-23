@@ -6,5 +6,10 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
   future: {
     compatibilityVersion: 4
+  },
+  runtimeConfig: {
+    public: {
+      apiBase: 'http://localhost:3000/admin'
+    }
   }
 })
